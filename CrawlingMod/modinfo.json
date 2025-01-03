@@ -1,0 +1,13 @@
+{
+    "type": "code",
+    "modid": "mopiscrawlingmod",
+    "name": "Mopi's Crawling Mod",
+    "authors": [
+        "mopi"
+    ],
+    "description": "Adds crawling to Vintage Story",
+    "version": "1.0.0",
+    "dependencies": {
+        "game": ""
+    }
+}
