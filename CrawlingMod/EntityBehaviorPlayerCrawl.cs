@@ -42,14 +42,14 @@ namespace MopisCrawlingMod {
             crawlEyeHeight = defaultEyeHeight - 1;
         }
 
-        public bool CanStand(Entity entity) {
+        public bool CanStand() {
             // Returns true if block above is non solid
             return !entity.World.BlockAccessor.IsSideSolid((int)entity.Pos.X, (int)entity.Pos.Y + 1, (int)entity.Pos.Z, BlockFacing.UP);
         }
 
-        public void ToggleCrawling(Entity entity) {
+        public void ToggleCrawling() {
 
-            if (isCrawling && !CanStand(entity)) {
+            if (isCrawling && !CanStand()) {
                 MessageLogger.log("You cannot stand here");
                 return;
             }
@@ -74,6 +74,5 @@ namespace MopisCrawlingMod {
                 entity.StopAnimation("mopi-crawl");
             }
         }
-
     }
 }

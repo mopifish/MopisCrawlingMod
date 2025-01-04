@@ -50,11 +50,11 @@ namespace MopisCrawlingMod {
             EntityPlayer entityPlayer = _capi.World.Player.Entity;
 
             if (!entityPlayer.HasBehavior<EntityBehaviorPlayerCrawl>()) {
-                _capi.World.Player.ShowChatNotification("[ERROR][Mopi's Crawling]: Crawl Behavior Not Found");
+                MessageLogger.log("[ERROR][Mopi's Crawling]: Crawl Behavior Not Found");
                 return false; 
             } 
 
-            entityPlayer.GetBehavior<EntityBehaviorPlayerCrawl>().ToggleCrawling(_capi.World.Player.Entity);
+            entityPlayer.GetBehavior<EntityBehaviorPlayerCrawl>().ToggleCrawling();
 
             return true;
         }
