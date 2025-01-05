@@ -67,23 +67,52 @@ namespace MopisCrawlingMod {
               );
         }
 
+        public override void AfterInitialized(bool onFirstSpawn) {
+            base.AfterInitialized(onFirstSpawn);
+            if (!CanStand()) { StartCrawling(); }
+        }
+
+        public override void OnEntityLoaded() {
+            base.OnEntityLoaded();
+        }
+
         public bool CanStand() {
-            // Returns true if block above is non solid
-            BlockPos pos = new BlockPos((int)entity.Pos.X, (int)entity.Pos.Y + 1, (int)entity.Pos.Z, entity.Pos.Dimension);
-            Block block = entity.World.BlockAccessor.GetBlock(pos, BlockLayersAccess.Solid);
+            // Gets block above
+            BlockPos topPos = new BlockPos((int)entity.Pos.X, (int)entity.Pos.Y + 1, (int)entity.Pos.Z, entity.Pos.Dimension);
+            Block topBlock = entity.World.BlockAccessor.GetBlock(topPos, BlockLayersAccess.Solid);
 
-            Cuboidf[] colliders = block.GetCollisionBoxes(entity.World.BlockAccessor, pos);
-            if (colliders == null) { return true; } // If non solid block
+            // Gets current block (in case youre inside of a chiselled block)
+            BlockPos bottomPos = new BlockPos((int)entity.Pos.X, (int)entity.Pos.Y, (int)entity.Pos.Z, entity.Pos.Dimension);
+            Block bottomBlock = entity.World.BlockAccessor.GetBlock(bottomPos, BlockLayersAccess.Solid);
 
-            // == Get players "standing" collider for checks
-            EntityProperties props = new EntityProperties(); // Going through props so I'm relying on internal logic. Hopefully future proof?
-            props.CollisionBoxSize = sneakingHitboxSize;
-            Cuboidf playerCollider = props.SpawnCollisionBox.OffsetCopy(Math.Abs((float)entity.Pos.X % 1), -1f, Math.Abs((float)entity.Pos.Z % 1)); // NOTE: Y offset is -1, this is because player is more than 1 block tall
+            Cuboidf[] topColliders = topBlock.GetCollisionBoxes(entity.World.BlockAccessor, topPos);
+            Cuboidf[] bottomColliders = bottomBlock.GetCollisionBoxes(entity.World.BlockAccessor, bottomPos);
 
-            foreach ( Cuboidf collider in colliders) {
-                if (IsBoxesColliding(collider, playerCollider)){ return false; }
+            // Check bottom block first
+            if (bottomColliders != null) {
+                // == Get players "standing" collider for checks
+                EntityProperties props = new EntityProperties(); // Going through props so I'm relying on internal logic. Hopefully future proof?
+                props.CollisionBoxSize = sneakingHitboxSize;
+                Cuboidf playerCollider = props.SpawnCollisionBox.OffsetCopy(Math.Abs((float)entity.Pos.X % 1), 0, Math.Abs((float)entity.Pos.Z % 1)); // NOTE: Y offset is -1, this is because player is more than 1 block tall
+
+                foreach (Cuboidf collider in bottomColliders) {
+                    if (IsBoxesColliding(collider, playerCollider)) { return false; }
+                }
             }
 
+            // If bottom bock is clear, check top block
+            if (topColliders != null) {
+                // == Get players "standing" collider for checks
+                EntityProperties props = new EntityProperties(); // Going through props so I'm relying on internal logic. Hopefully future proof?
+                props.CollisionBoxSize = sneakingHitboxSize;
+                Cuboidf playerCollider = props.SpawnCollisionBox.OffsetCopy(Math.Abs((float)entity.Pos.X % 1), -1f, Math.Abs((float)entity.Pos.Z % 1)); // NOTE: Y offset is -1, this is because player is more than 1 block tall
+
+                foreach (Cuboidf collider in topColliders) {
+                    if (IsBoxesColliding(collider, playerCollider)) { return false; }
+                }
+            }
+
+            // All blocks clear, return true
             return true;
         }
 
