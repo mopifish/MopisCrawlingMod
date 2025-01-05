@@ -3,6 +3,7 @@ using System;
 using System.Text.Json.Nodes;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
+using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.Server;
@@ -11,17 +12,17 @@ using Vintagestory.Common;
 namespace MopisCrawlingMod {
     public class MopiCrawlModSystem : ModSystem {
 
-        public static string version = "1.0.0"; // Find a way to load this from modinfo
+        public static string version = "1.0.1"; // Find a way to load this from modinfo
 
         private static ICoreAPI _api;
         private static ICoreClientAPI _capi;
         private static ICoreServerAPI _sapi;
-        private bool isCrouching = false;
-
 
         public override void Start(ICoreAPI api) {
             base.Start(api);
             _api = api;
+
+            _api.RegisterEntityBehaviorClass("crawling", typeof(EntityBehaviorPlayerCrawl));
         }
         public override void StartClientSide(ICoreClientAPI api) {
             base.StartClientSide(api);
@@ -30,9 +31,7 @@ namespace MopisCrawlingMod {
 
             ConfigLoader.ApplyConfig();
 
-            _capi = api;
-
-            _capi.RegisterEntityBehaviorClass("crawling", typeof(EntityBehaviorPlayerCrawl));
+            _capi = api;            
 
             // Register for key press events
             _capi.Input.RegisterHotKey("crawlKey", "Crawl Key", GlKeys.LAlt);
@@ -42,8 +41,10 @@ namespace MopisCrawlingMod {
         public override void StartServerSide(ICoreServerAPI api) {
             base.StartServerSide(api);
             _sapi = api;
+        }
 
-            _sapi.RegisterEntityBehaviorClass("crawling", typeof(EntityBehaviorPlayerCrawl));
+        public override void AssetsLoaded(ICoreAPI api) {
+            base.AssetsLoaded(api);
         }
 
         public static bool OnCrawlKeyPressed(KeyCombination comb) {

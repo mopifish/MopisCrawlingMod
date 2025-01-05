@@ -6,7 +6,7 @@
         "mopi"
     ],
     "description": "Adds crawling to Vintage Story",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "dependencies": {
         "game": ""
     }
